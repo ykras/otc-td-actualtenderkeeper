@@ -3,9 +3,9 @@ using ActualTenderKeeper.Abstract;
 
 namespace ActualTenderKeeper.Core
 {
-    public sealed class ActualTenderService : IActualTenderService
+    public sealed class ActualTenderKeeperController : IActualTenderKeeperController
     {
-        public ActualTenderService()
+        public ActualTenderKeeperController()
         {
             
         }
