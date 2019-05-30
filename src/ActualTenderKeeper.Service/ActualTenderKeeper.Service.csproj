@@ -7,7 +7,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Include="..\..\config\NLog.config" Link="NLog.config">
+    <None Include="..\..\config\NLog.config">
+      <Link>NLog.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -25,6 +26,13 @@
     <ProjectReference Include="..\ActualTenderKeeper.Abstract\ActualTenderKeeper.Abstract.csproj" />
     <ProjectReference Include="..\ActualTenderKeeper.Core\ActualTenderKeeper.Core.csproj" />
     <ProjectReference Include="..\ActualTenderKeeper.Infrastrusture\ActualTenderKeeper.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\config\config.json">
+      <Link>config.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

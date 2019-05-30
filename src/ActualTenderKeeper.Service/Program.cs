@@ -7,7 +7,6 @@ using ActualTenderKeeper.Abstract;
 using Infrastructure.Abstract.Logging;
 using Infrastructure.Logging;
 using Microsoft.Extensions.Hosting;
-using NLog;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Topshelf;
@@ -39,10 +38,10 @@ namespace ActualTenderKeeper.Service
                     using (var container = CreateDiContainer())
                     {
                         log = container.GetInstance<ILog>();
-                        var svc = container.GetInstance<IActualTenderKeeperController>();
+                        var svc = container.GetInstance<IActualTenderServiceController>();
                         HostFactory.Run(hc =>
                         {
-                            hc.Service<IActualTenderKeeperController>(c =>
+                            hc.Service<IActualTenderServiceController>(c =>
                             {
                                 c.ConstructUsing(_ => svc);
                                 c.WhenStarted(s => s.StartAsync());

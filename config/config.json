@@ -1,21 +1,5 @@
 {
-  "ReconzaAccounting": {
-    "FinancialTransactionFileEncoding": "windows-1251" 
-  },
-
-  "Database": {
-    "ConnectionString": "dbconnection"
-  },
-
-  "FinancialServiceIntegration": {
-    "WebApiUrl": "http://www.finservice.ru",
-    "WebApiTimeoutInSeconds": "15"
-  },
-
-  "Logging": {
-    "LogLevel": {
-      "Default": "Trace",
-      "Microsoft": "Information" 
-    } 
-  } 
+  "Elasticsearch": {
+    "BootstrapHosts": ["10.10.5.125:9222", "localhost:9222"]
+  }
 }
