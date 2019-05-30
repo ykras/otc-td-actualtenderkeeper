@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
 using Infrastructure.Abstract.Logging;
 using Infrastructure.Logging;
+using Microsoft.Extensions.Hosting;
 using NLog;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -19,56 +22,65 @@ namespace ActualTenderKeeper.Service
         private const int DelayBeforeRestartServiceInMinutes = 1;
         private const int DelayBeforeResetFailCountInDays = 1;
         
-        private static void Main()
+        private static async Task Main()
         {
-            RunService();
+            var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            if (windows) await RunWinService();
+            else await RunDaemon();
         }
 
-        private static void RunService()
+        private static Task RunWinService()
         {
-            var log = NullLog.Instance;
-            try
+            var task = Task.Run(() =>
             {
-                using (var container = CreateDiContainer())
+                var log = NullLog.Instance;
+                try
                 {
-                    log = container.GetInstance<ILog>();
-                    var svc = container.GetInstance<IActualTenderKeeperController>();
-                    HostFactory.Run(hc =>
+                    using (var container = CreateDiContainer())
                     {
-                        hc.Service<IActualTenderKeeperController>(c =>
+                        log = container.GetInstance<ILog>();
+                        var svc = container.GetInstance<IActualTenderKeeperController>();
+                        HostFactory.Run(hc =>
                         {
-                            c.ConstructUsing(_ => svc);
-                            c.WhenStarted(s => s.StartAsync());
-                            c.WhenStopped(s => s.StopAsync());
-                            c.WhenContinued(s => s.StartAsync());
-                            c.WhenPaused(s => s.StopAsync());
-                            c.WhenShutdown(s => s.StopAsync());
+                            hc.Service<IActualTenderKeeperController>(c =>
+                            {
+                                c.ConstructUsing(_ => svc);
+                                c.WhenStarted(s => s.StartAsync());
+                                c.WhenStopped(s => s.StopAsync());
+                                c.WhenContinued(s => s.StartAsync());
+                                c.WhenPaused(s => s.StopAsync());
+                                c.WhenShutdown(s => s.StopAsync());
+                            });
+                            hc.EnableShutdown();
+                            hc.EnablePauseAndContinue();
+                            hc.EnableServiceRecovery(c =>
+                            {
+                                c.OnCrashOnly();
+                                c.RestartService(DelayBeforeRestartServiceInMinutes);
+                                c.SetResetPeriod(DelayBeforeResetFailCountInDays);
+                            });
+                            hc.OnException(e => log.Error(e));
+                            hc.SetServiceName(ServiceName);
+                            hc.SetDisplayName(ServiceDisplayName);
+                            hc.SetDescription(ServiceDescription);
+                            hc.RunAsLocalSystem();
+                            hc.StartAutomatically();
                         });
-                        hc.EnableShutdown();
-                        hc.EnablePauseAndContinue();
-                        hc.EnableServiceRecovery(c =>
-                        {
-                            c.OnCrashOnly();
-                            c.RestartService(DelayBeforeRestartServiceInMinutes);
-                            c.SetResetPeriod(DelayBeforeResetFailCountInDays);
-                        });
-                        hc.OnException(e => log.Error(e));
-                        hc.SetServiceName(ServiceName);
-                        hc.SetDisplayName(ServiceDisplayName);
-                        hc.SetDescription(ServiceDescription);
-                        hc.RunAsLocalSystem();
-                        hc.StartAutomatically();
-                    });
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                log.Fatal(ex,"Failed to start service");
-            }
-            finally
-            {
-                LogManager.Shutdown();
-            }
+                catch (Exception ex)
+                {
+                    log.Fatal(ex,"Failed to start service");
+                }
+
+            });
+            return task;
+        }
+
+        private static async Task RunDaemon()
+        {
+            var builder = new HostBuilder();
+            await builder.RunConsoleAsync();
         }
 
         private static Container CreateDiContainer()
