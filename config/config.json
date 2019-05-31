@@ -2,7 +2,7 @@
   "Elasticsearch": {
     "BootstrapHosts": ["10.10.5.125:9222"],
     "ActualTenderIndex": "traderegistry_tender",
-    "NotActualTenderIndex": "traderegistry_not_actual_tender"
+    "ArchiveTenderIndex": "traderegistry_tender_archive"
   },
   "TenderReindexSchedule": {
     "CronExpression": "0 0/1 * 1/1 * ? *"
