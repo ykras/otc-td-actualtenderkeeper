@@ -30,15 +30,15 @@ namespace ActualTenderKeeper.Service.CompositionRoot
                Lifestyle.Singleton,
                c => true);
            container.RegisterInstance(ConfigurationBuilder.BuildConfiguration());
-           container.Register<IElasticsearchOptions, Options>(Lifestyle.Singleton);
+           container.Register<IElasticsearchOptions, ElasticsearchOptions>(Lifestyle.Singleton);
+           container.Register<ITenderReindexScheduleOptions, TenderReindexScheduleOptions>(Lifestyle.Singleton);
            container.RegisterInstance<IJobFactory>(
                new SimpleInjectorJobFactory(container,
                    typeof(IJobBuilder).Assembly));
            container.Register<ISchedulerProvider, SchedulerProvider>(Lifestyle.Singleton);
            container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
            container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
-           //container.Register<IJob, ActualTenderReindexJob>(Lifestyle.Transient);
-           container.Register<IActualTenderServiceController, ActualTenderSchedule>(Lifestyle.Singleton);
+           container.Register<ITenderReindexController, TenderReindexSchedule>(Lifestyle.Singleton);
         }
     }
     

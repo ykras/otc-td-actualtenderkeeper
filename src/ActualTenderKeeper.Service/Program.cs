@@ -38,10 +38,10 @@ namespace ActualTenderKeeper.Service
                     using (var container = CreateDiContainer())
                     {
                         log = container.GetInstance<ILog>();
-                        var svc = container.GetInstance<IActualTenderServiceController>();
+                        var svc = container.GetInstance<ITenderReindexController>();
                         HostFactory.Run(hc =>
                         {
-                            hc.Service<IActualTenderServiceController>(c =>
+                            hc.Service<ITenderReindexController>(c =>
                             {
                                 c.ConstructUsing(_ => svc);
                                 c.WhenStarted(s => s.StartAsync());

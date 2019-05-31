@@ -1,17 +1,25 @@
 using System;
 using System.Threading.Tasks;
+using ActualTenderKeeper.Abstract;
+using ActualTenderKeeper.Infrastructure.Elasticsearch;
 using Infrastructure.Abstract.Logging;
 using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule
 {
-    public sealed class ActualTenderReindexJob : IJob
+    public sealed class TenderReindexJob : IJob
     {
         private readonly ILog _log;
 
-        public ActualTenderReindexJob(ILog log)
+        private readonly IElasticsearchOptions _options;
+
+        public TenderReindexJob(ILog log,
+            IElasticsearchOptions options)
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
+
+
+            _options = options;
         }
         
         #region IJob
@@ -20,7 +28,10 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         {
             try
             {
-               
+                var interop = new ElasticInterop(_options);
+
+                var t = interop.FindTender();
+
             }
             catch (Exception e)
             {

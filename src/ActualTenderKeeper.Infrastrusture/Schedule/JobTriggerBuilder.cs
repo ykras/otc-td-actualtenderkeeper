@@ -1,20 +1,24 @@
+using System;
+using ActualTenderKeeper.Abstract;
 using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule
 {
     public sealed class JobTriggerBuilder : IJobBuilder, ITriggerBuilder
     {
-        public JobTriggerBuilder()
+        private readonly ITenderReindexScheduleOptions _scheduleOptions;
+        
+        public JobTriggerBuilder(ITenderReindexScheduleOptions scheduleOptions)
         {
-            
+            _scheduleOptions = scheduleOptions ?? throw new ArgumentNullException(nameof(scheduleOptions));
         }
         
         #region IJobBuilder
         
         public IJobDetail BuildActualTenderReindexJob()
         {
-            var jobDetail = JobBuilder.Create<ActualTenderReindexJob>()
-                .WithIdentity(nameof(ActualTenderReindexJob))
+            var jobDetail = JobBuilder.Create<TenderReindexJob>()
+                .WithIdentity(nameof(TenderReindexJob))
                 .Build();
             return jobDetail;
         }
@@ -27,7 +31,7 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         {
             var builder = TriggerBuilder.Create()
                 .WithIdentity("ActualTenderReindexTrigger")
-                .WithCronSchedule("0 0/1 * 1/1 * ? *");
+                .WithCronSchedule(_scheduleOptions.CronExpression);
                 return builder.Build();
         }
         

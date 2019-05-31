@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace ActualTenderKeeper.Abstract
 {
-    public interface IActualTenderServiceController
+    public interface ITenderReindexController
     {
         void StartAsync(CancellationToken ct = default(CancellationToken));
 

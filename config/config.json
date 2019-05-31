@@ -1,5 +1,10 @@
 {
   "Elasticsearch": {
-    "BootstrapHosts": ["10.10.5.125:9222", "localhost:9222"]
+    "BootstrapHosts": ["10.10.5.125:9222"],
+    "ActualTenderIndex": "traderegistry_tender",
+    "NotActualTenderIndex": "traderegistry_not_actual_tender"
+  },
+  "TenderReindexSchedule": {
+    "CronExpression": "0 0/1 * 1/1 * ? *"
   }
 }

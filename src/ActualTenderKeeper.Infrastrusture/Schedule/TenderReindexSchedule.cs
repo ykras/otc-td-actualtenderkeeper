@@ -8,7 +8,7 @@ using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule
 {
-    public sealed class ActualTenderSchedule : IActualTenderServiceController
+    public sealed class TenderReindexSchedule : ITenderReindexController
     {
         private readonly ISchedulerProvider _schedulerProvider;
         private readonly IJobBuilder _jobBuilder;
@@ -16,7 +16,7 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         private AsyncLazy<IScheduler> _asyncScheduler;
         private readonly ILog _log;
         
-        public ActualTenderSchedule(ISchedulerProvider schedulerProvider,
+        public TenderReindexSchedule(ISchedulerProvider schedulerProvider,
             IJobBuilder jobBuilder, ITriggerBuilder triggerBuilder, ILog log)
         {
             _schedulerProvider = schedulerProvider ?? throw new ArgumentNullException(nameof(schedulerProvider));
