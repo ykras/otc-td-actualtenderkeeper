@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
+using ActualTenderKeeper.Infrastructure.Schedule;
 using Infrastructure.Abstract.Logging;
 using Infrastructure.Logging;
 using Microsoft.Extensions.Hosting;
@@ -20,74 +22,77 @@ namespace ActualTenderKeeper.Service
         private const string ServiceDescription = "Keeper of actual tenders index in Elasticsearch";
         private const int DelayBeforeRestartServiceInMinutes = 1;
         private const int DelayBeforeResetFailCountInDays = 1;
+
+        private static Task Main() => Run();
         
-        private static async Task Main()
+        private static async Task Run()
         {
             var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            if (windows) await RunWinService();
-            else await RunDaemon();
+            using (var container = CreateDiContainer())
+            {
+                await (windows ? RunWinServiceUsing(container) : RunDaemonUsing(container));
+            }
         }
 
-        private static Task RunWinService()
+        private static Task RunWinServiceUsing(Container container)
         {
+            RegisterDependenciesWith(container);
             var task = Task.Run(() =>
             {
-                var log = NullLog.Instance;
-                try
+                var log = container.GetInstance<ILog>();
+                var svc = container.GetInstance<IHostedService>();
+                HostFactory.Run(hc =>
                 {
-                    using (var container = CreateDiContainer())
+                    hc.Service<IHostedService>(c =>
                     {
-                        log = container.GetInstance<ILog>();
-                        var svc = container.GetInstance<ITenderReindexController>();
-                        HostFactory.Run(hc =>
-                        {
-                            hc.Service<ITenderReindexController>(c =>
-                            {
-                                c.ConstructUsing(_ => svc);
-                                c.WhenStarted(s => s.StartAsync());
-                                c.WhenStopped(s => s.StopAsync());
-                                c.WhenContinued(s => s.StartAsync());
-                                c.WhenPaused(s => s.StopAsync());
-                                c.WhenShutdown(s => s.StopAsync());
-                            });
-                            hc.EnableShutdown();
-                            hc.EnablePauseAndContinue();
-                            hc.EnableServiceRecovery(c =>
-                            {
-                                c.OnCrashOnly();
-                                c.RestartService(DelayBeforeRestartServiceInMinutes);
-                                c.SetResetPeriod(DelayBeforeResetFailCountInDays);
-                            });
-                            hc.OnException(e => log.Error(e));
-                            hc.SetServiceName(ServiceName);
-                            hc.SetDisplayName(ServiceDisplayName);
-                            hc.SetDescription(ServiceDescription);
-                            hc.RunAsLocalSystem();
-                            hc.StartAutomatically();
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.Fatal(ex,"Failed to start service");
-                }
-
+                        c.ConstructUsing(_ => svc);
+                        c.WhenStarted(s => s.StartAsync(default));
+                        c.WhenStopped(s => s.StopAsync(default));
+                        c.WhenContinued(s => s.StartAsync(default));
+                        c.WhenPaused(s => s.StopAsync(default));
+                        c.WhenShutdown(s => s.StopAsync(default));
+                    });
+                    hc.EnableShutdown();
+                    hc.EnablePauseAndContinue();
+                    hc.EnableServiceRecovery(c =>
+                    {
+                        c.OnCrashOnly();
+                        c.RestartService(DelayBeforeRestartServiceInMinutes);
+                        c.SetResetPeriod(DelayBeforeResetFailCountInDays);
+                    });
+                    hc.OnException(e => log.Error(e));
+                    hc.SetServiceName(ServiceName);
+                    hc.SetDisplayName(ServiceDisplayName);
+                    hc.SetDescription(ServiceDescription);
+                    hc.RunAsLocalSystem();
+                    hc.StartAutomatically();
+                });
             });
             return task;
         }
 
-        private static async Task RunDaemon()
+        private static async Task RunDaemonUsing(Container container)
         {
-            var builder = new HostBuilder();
-            await builder.RunConsoleAsync();
+            var builder = new HostBuilder()
+                .ConfigureServices((hostContext, services) => {
+                    services.AddSimpleInjector(container, options =>
+                    {
+                        // Hooks hosted services into the Generic Host pipeline
+                        // while resolving them through Simple Injector
+                        options.AddHostedService<TenderReindexSchedule>();
+                    });
+                })
+                .UseConsoleLifetime()
+                .Build()
+                .UseSimpleInjector(container);
+            RegisterDependenciesWith(container);
+            await builder.RunAsync();
         }
 
         private static Container CreateDiContainer()
         {
             var container = new Container();
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-            RegisterDependenciesWith(container);
-            container.Verify();
             return container;
         }
 
@@ -104,6 +109,7 @@ namespace ActualTenderKeeper.Service
             {
                 registrar.Invoke(null, new object[] { container });
             }
+            container.Verify();
         }
 
     }

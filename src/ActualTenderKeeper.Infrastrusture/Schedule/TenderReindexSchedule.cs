@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
 using ActualTenderKeeper.Infrastructure.Tools;
 using Infrastructure.Abstract.Logging;
+using Microsoft.Extensions.Hosting;
 using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule
 {
-    public sealed class TenderReindexSchedule : ITenderReindexController
+    public sealed class TenderReindexSchedule : IHostedService
     {
         private readonly ISchedulerProvider _schedulerProvider;
         private readonly IJobBuilder _jobBuilder;
@@ -28,7 +29,7 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
 
         #region IActualTenderServiceController
         
-        public async void StartAsync(CancellationToken ct = default(CancellationToken))
+        public async Task StartAsync(CancellationToken ct = default(CancellationToken))
         {
             try
             {
@@ -39,10 +40,11 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
             catch (Exception e)
             {
                _log.Error(e);
+               throw;
             }
         }
 
-        public async void StopAsync(CancellationToken ct = default(CancellationToken))
+        public async Task StopAsync(CancellationToken ct = default(CancellationToken))
         {
             try
             {
@@ -51,6 +53,7 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
             catch (Exception e)
             {
                 _log.Error(e);
+                throw;
             }
         }
         

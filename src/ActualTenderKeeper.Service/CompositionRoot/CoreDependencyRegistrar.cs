@@ -1,5 +1,4 @@
 using ActualTenderKeeper.Abstract;
-using ActualTenderKeeper.Core;
 using SimpleInjector;
 
 namespace ActualTenderKeeper.Service.CompositionRoot

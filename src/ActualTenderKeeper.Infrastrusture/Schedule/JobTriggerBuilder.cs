@@ -1,5 +1,6 @@
 using System;
 using ActualTenderKeeper.Abstract;
+using ActualTenderKeeper.Infrastructure.Schedule.Jobs;
 using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule

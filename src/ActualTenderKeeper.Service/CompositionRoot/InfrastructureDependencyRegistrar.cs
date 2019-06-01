@@ -11,6 +11,7 @@ using ActualTenderKeeper.Infrastructure.Logging;
 using ActualTenderKeeper.Infrastructure.Schedule;
 using Infrastructure.Abstract.Logging;
 using Infrastructure.Logging.NLog;
+using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Spi;
 using SimpleInjector;
@@ -38,7 +39,7 @@ namespace ActualTenderKeeper.Service.CompositionRoot
            container.Register<ISchedulerProvider, SchedulerProvider>(Lifestyle.Singleton);
            container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
            container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
-           container.Register<ITenderReindexController, TenderReindexSchedule>(Lifestyle.Singleton);
+           container.Register<IHostedService, TenderReindexSchedule>(Lifestyle.Singleton);
         }
     }
     
