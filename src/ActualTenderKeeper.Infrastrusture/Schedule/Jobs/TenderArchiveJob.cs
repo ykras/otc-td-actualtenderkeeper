@@ -32,6 +32,8 @@ namespace ActualTenderKeeper.Infrastructure.Schedule.Jobs
                 var interop = new ElasticInterop(_options);
 
                 var t = interop.FindTender();
+                
+                throw new Exception("ERR");
 
             }
             catch (Exception e)

@@ -79,7 +79,7 @@ namespace ActualTenderKeeper.Service
                     {
                         // Hooks hosted services into the Generic Host pipeline
                         // while resolving them through Simple Injector
-                        options.AddHostedService<TenderReindexSchedule>();
+                        options.AddHostedService<KeepActualTenderScheduler>();
                     });
                 })
                 .UseConsoleLifetime()

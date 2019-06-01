@@ -39,7 +39,7 @@ namespace ActualTenderKeeper.Service.CompositionRoot
            container.Register<ISchedulerProvider, SchedulerProvider>(Lifestyle.Singleton);
            container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
            container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
-           container.Register<IHostedService, TenderReindexSchedule>(Lifestyle.Singleton);
+           container.Register<IHostedService, KeepActualTenderScheduler>(Lifestyle.Singleton);
         }
     }
     
