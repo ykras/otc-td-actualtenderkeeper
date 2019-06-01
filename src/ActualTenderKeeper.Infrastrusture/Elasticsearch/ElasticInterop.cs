@@ -26,7 +26,7 @@ namespace ActualTenderKeeper.Infrastructure.Elasticsearch
         {
             var response = _client.Search<Tender>(s => s
                 .Index(_options.ActualTenderIndexName)
-                .Type("tender")
+                //.Type("tender")
                 .Query(q => q.Ids(c => c
                     .Values(3760131)))
             );

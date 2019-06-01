@@ -18,8 +18,8 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         
         public IJobDetail BuildActualTenderReindexJob()
         {
-            var jobDetail = JobBuilder.Create<TenderReindexJob>()
-                .WithIdentity(nameof(TenderReindexJob))
+            var jobDetail = JobBuilder.Create<TenderArchiveJob>()
+                .WithIdentity(nameof(TenderArchiveJob))
                 .Build();
             return jobDetail;
         }

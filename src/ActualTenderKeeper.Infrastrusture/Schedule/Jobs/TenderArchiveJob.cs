@@ -8,13 +8,13 @@ using Quartz;
 namespace ActualTenderKeeper.Infrastructure.Schedule.Jobs
 {
     [DisallowConcurrentExecution]
-    public sealed class TenderReindexJob : IJob
+    public sealed class TenderArchiveJob : IJob
     {
         private readonly ILog _log;
 
         private readonly IElasticsearchOptions _options;
 
-        public TenderReindexJob(ILog log,
+        public TenderArchiveJob(ILog log,
             IElasticsearchOptions options)
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
