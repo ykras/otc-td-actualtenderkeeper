@@ -7,10 +7,16 @@
     <ItemGroup>
       <Compile Remove="Class1.cs" />
       <Compile Remove="TenderReindexController.cs" />
+      <Compile Remove="ElasticProcessResult.cs" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\ActualTenderKeeper.Abstract\ActualTenderKeeper.Abstract.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+      <PackageReference Include="Otc.Infrastructure.Abstract" Version="2.3.0" />
     </ItemGroup>
 
 </Project>

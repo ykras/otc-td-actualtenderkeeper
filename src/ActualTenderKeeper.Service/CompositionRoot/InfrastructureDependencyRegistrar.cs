@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
+using ActualTenderKeeper.Core;
 using ActualTenderKeeper.Infrastructure.Configuration;
+using ActualTenderKeeper.Infrastructure.Elasticsearch;
 using ActualTenderKeeper.Infrastructure.Logging;
 using ActualTenderKeeper.Infrastructure.Schedule;
 using Infrastructure.Abstract.Logging;
@@ -31,15 +31,16 @@ namespace ActualTenderKeeper.Service.CompositionRoot
                Lifestyle.Singleton,
                c => true);
            container.RegisterInstance(ConfigurationBuilder.BuildConfiguration());
-           container.Register<IElasticsearchOptions, ElasticsearchOptions>(Lifestyle.Singleton);
-           container.Register<ITenderReindexScheduleOptions, TenderReindexScheduleOptions>(Lifestyle.Singleton);
+           container.Register<IElasticsearchOptions, ElasticsearchOptions>(Lifestyle.Scoped);
+           container.Register<ITenderReindexScheduleOptions, TenderReindexScheduleOptions>(Lifestyle.Transient);
            container.RegisterInstance<IJobFactory>(
                new SimpleInjectorJobFactory(container,
                    typeof(IJobBuilder).Assembly));
-           container.Register<ISchedulerProvider, SchedulerProvider>(Lifestyle.Singleton);
-           container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
-           container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Singleton);
-           container.Register<IHostedService, KeepActualTenderScheduler>(Lifestyle.Singleton);
+           container.Register<ISchedulerProvider, SchedulerProvider>(Lifestyle.Transient);
+           container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Transient);
+           container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Transient);
+           container.Register<IHostedService, KeepActualTenderScheduler>(Lifestyle.Transient);
+           container.Register<INotActualTendersArchiver, NotActualTendersArchiver>(Lifestyle.Scoped);
         }
     }
     

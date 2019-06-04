@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
-using ActualTenderKeeper.Infrastructure.Elasticsearch;
 using Infrastructure.Abstract.Logging;
 using Quartz;
 
@@ -10,38 +9,27 @@ namespace ActualTenderKeeper.Infrastructure.Schedule.Jobs
     [DisallowConcurrentExecution]
     public sealed class TenderArchiveJob : IJob
     {
+        private readonly ITenderArchiveStrategy _strategy;
         private readonly ILog _log;
-
-        private readonly IElasticsearchOptions _options;
-
-        public TenderArchiveJob(ILog log,
-            IElasticsearchOptions options)
+        
+        public TenderArchiveJob(ITenderArchiveStrategy strategy, ILog log)
         {
+            _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _log = log ?? throw new ArgumentNullException(nameof(log));
-
-
-            _options = options;
         }
         
         #region IJob
         
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             try
             {
-                var interop = new ElasticInterop(_options);
-
-                var t = interop.FindTender();
-                
-                throw new Exception("ERR");
-
+                await _strategy.ArchiveNotActualTenders(context.CancellationToken);
             }
             catch (Exception e)
             {
                 _log.Error(e);
             }
-            
-            return Task.FromResult("OK");
         }
         
         #endregion

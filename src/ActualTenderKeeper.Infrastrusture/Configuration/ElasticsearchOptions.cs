@@ -11,7 +11,7 @@ namespace ActualTenderKeeper.Infrastructure.Configuration
         private const string ConfigSectionName = "Elasticsearch";
         private const string BootstrapHostsOptionKey = "BootstrapHosts";
         private const string ActualTenderIndexNameOptionKey = "ActualTenderIndex";
-        private const string NotActualTenderIndexNameOptionKey = "NotActualTenderIndex";
+        private const string NotActualTenderIndexNameOptionKey = "ArchiveTenderIndex";
         private const string TenderDocumentIndexNameOptionKey = "TenderDocumentIndex";
 
         public ElasticsearchOptions(IConfiguration config)
@@ -26,7 +26,7 @@ namespace ActualTenderKeeper.Infrastructure.Configuration
 
         public string ActualTenderIndexName => _config.GetValue<string>(ActualTenderIndexNameOptionKey);
 
-        public string NotActualTenderIndexName => _config.GetValue<string>(NotActualTenderIndexNameOptionKey);
+        public string ArchiveTenderIndexName => _config.GetValue<string>(NotActualTenderIndexNameOptionKey);
 
         #endregion
     }

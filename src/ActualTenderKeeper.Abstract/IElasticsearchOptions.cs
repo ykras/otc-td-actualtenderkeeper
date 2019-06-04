@@ -8,6 +8,6 @@ namespace ActualTenderKeeper.Abstract
         
         string ActualTenderIndexName { get; }
         
-        string NotActualTenderIndexName { get; }
+        string ArchiveTenderIndexName { get; }
     }
 }

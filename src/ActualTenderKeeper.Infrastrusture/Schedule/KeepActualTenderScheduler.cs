@@ -1,11 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ActualTenderKeeper.Abstract;
 using ActualTenderKeeper.Infrastructure.Tools;
 using Infrastructure.Abstract.Logging;
 using Microsoft.Extensions.Hosting;
 using Quartz;
+
+using static ActualTenderKeeper.Infrastructure.Tools.Constants;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule
 {
@@ -33,9 +34,11 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         {
             try
             {
+                _log.Info($"Start service {ServiceName}");
                 await ScheduleJob(_jobBuilder.BuildActualTenderReindexJob(),
                     _triggerBuilder.BuildActualTenderReindexTrigger()).ConfigureAwait(false);
                 await StartScheduler().ConfigureAwait(false);
+                _log.Info($"Service {ServiceName} started");
             }
             catch (Exception e)
             {
@@ -48,7 +51,9 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         {
             try
             {
+                _log.Info($"Stop service {ServiceName}");
                 await StopScheduler();
+                _log.Info($"Service {ServiceName} stopped");
             }
             catch (Exception e)
             {

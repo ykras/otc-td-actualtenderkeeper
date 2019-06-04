@@ -1,28 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
-using ActualTenderKeeper.Abstract;
 using ActualTenderKeeper.Infrastructure.Schedule;
 using Infrastructure.Abstract.Logging;
-using Infrastructure.Logging;
 using Microsoft.Extensions.Hosting;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Topshelf;
 
+using static ActualTenderKeeper.Infrastructure.Tools.Constants;
+
 namespace ActualTenderKeeper.Service
 {
     internal static class Program
     {
-        private const string ServiceName = "Traderegistry.Elastic.ActualTenderKeeper";
-        private const string ServiceDisplayName = "Traderegistry.Elastic.ActualTenderKeeper";
-        private const string ServiceDescription = "Keeper of actual tenders index in Elasticsearch";
-        private const int DelayBeforeRestartServiceInMinutes = 1;
-        private const int DelayBeforeResetFailCountInDays = 1;
-
         private static Task Main() => Run();
         
         private static async Task Run()
@@ -111,6 +103,5 @@ namespace ActualTenderKeeper.Service
             }
             container.Verify();
         }
-
     }
 }
