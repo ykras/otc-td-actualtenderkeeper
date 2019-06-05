@@ -13,6 +13,7 @@ namespace ActualTenderKeeper.Infrastructure.Configuration
         private const string ActualTenderIndexNameOptionKey = "ActualTenderIndex";
         private const string NotActualTenderIndexNameOptionKey = "ArchiveTenderIndex";
         private const string TenderDocumentIndexNameOptionKey = "TenderDocumentIndex";
+        private const string BatchSizeOptionKey = "BatchSize";
 
         public ElasticsearchOptions(IConfiguration config)
         {
@@ -27,6 +28,10 @@ namespace ActualTenderKeeper.Infrastructure.Configuration
         public string ActualTenderIndexName => _config.GetValue<string>(ActualTenderIndexNameOptionKey);
 
         public string ArchiveTenderIndexName => _config.GetValue<string>(NotActualTenderIndexNameOptionKey);
+
+        public string TenderDocumentIndexName => _config.GetValue<string>(TenderDocumentIndexNameOptionKey);
+
+        public int BatchSize => _config.GetValue<int>(BatchSizeOptionKey);
 
         #endregion
     }

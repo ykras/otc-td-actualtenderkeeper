@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace ActualTenderKeeper.Core
 {
     public sealed class Tender
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         
-        public DateTime ApplicationEndDate { get; set; }
     }
     
 }

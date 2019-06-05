@@ -9,5 +9,9 @@ namespace ActualTenderKeeper.Abstract
         string ActualTenderIndexName { get; }
         
         string ArchiveTenderIndexName { get; }
+        
+        string TenderDocumentIndexName { get; }
+        
+        int BatchSize { get; }
     }
 }

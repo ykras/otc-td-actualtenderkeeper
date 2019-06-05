@@ -9,6 +9,7 @@ namespace ActualTenderKeeper.Service.CompositionRoot
         public static void RegisterDependenciesWith(Container container)
         {
             container.Register<ITenderArchiveStrategy, TenderArchiveStrategy>(Lifestyle.Scoped);
+            container.Register<ITenderDocumentDeletionStrategy, TenderDocumentDeletionStrategy>(Lifestyle.Scoped);
         }
     }
 }

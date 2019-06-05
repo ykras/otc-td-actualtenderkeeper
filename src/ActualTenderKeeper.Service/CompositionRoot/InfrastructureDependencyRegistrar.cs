@@ -32,7 +32,7 @@ namespace ActualTenderKeeper.Service.CompositionRoot
                c => true);
            container.RegisterInstance(ConfigurationBuilder.BuildConfiguration());
            container.Register<IElasticsearchOptions, ElasticsearchOptions>(Lifestyle.Scoped);
-           container.Register<ITenderReindexScheduleOptions, TenderReindexScheduleOptions>(Lifestyle.Transient);
+           container.Register<IJobScheduleOptions, JobScheduleOptions>(Lifestyle.Transient);
            container.RegisterInstance<IJobFactory>(
                new SimpleInjectorJobFactory(container,
                    typeof(IJobBuilder).Assembly));
@@ -40,7 +40,7 @@ namespace ActualTenderKeeper.Service.CompositionRoot
            container.Register<IJobBuilder, JobTriggerBuilder>(Lifestyle.Transient);
            container.Register<ITriggerBuilder, JobTriggerBuilder>(Lifestyle.Transient);
            container.Register<IHostedService, KeepActualTenderScheduler>(Lifestyle.Transient);
-           container.Register<INotActualTendersArchiver, NotActualTendersArchiver>(Lifestyle.Scoped);
+           container.Register<IElasticAgent, ElasticAgent>(Lifestyle.Scoped);
         }
     }
     

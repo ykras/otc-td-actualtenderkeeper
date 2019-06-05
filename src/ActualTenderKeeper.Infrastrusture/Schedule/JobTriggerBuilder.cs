@@ -7,19 +7,27 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
 {
     public sealed class JobTriggerBuilder : IJobBuilder, ITriggerBuilder
     {
-        private readonly ITenderReindexScheduleOptions _scheduleOptions;
+        private readonly IJobScheduleOptions _scheduleOptions;
         
-        public JobTriggerBuilder(ITenderReindexScheduleOptions scheduleOptions)
+        public JobTriggerBuilder(IJobScheduleOptions scheduleOptions)
         {
             _scheduleOptions = scheduleOptions ?? throw new ArgumentNullException(nameof(scheduleOptions));
         }
         
         #region IJobBuilder
         
-        public IJobDetail BuildActualTenderReindexJob()
+        public IJobDetail BuildNotActualTenderArchiveJob()
         {
-            var jobDetail = JobBuilder.Create<TenderArchiveJob>()
-                .WithIdentity(nameof(TenderArchiveJob))
+            var jobDetail = JobBuilder.Create<NotActualTenderArchiveJob>()
+                .WithIdentity(nameof(NotActualTenderArchiveJob))
+                .Build();
+            return jobDetail;
+        }
+
+        public IJobDetail BuildNotActualTenderDocumentDeleteJob()
+        {
+            var jobDetail = JobBuilder.Create<NotActualTenderDocumentDeleteJob>()
+                .WithIdentity(nameof(NotActualTenderDocumentDeleteJob))
                 .Build();
             return jobDetail;
         }
@@ -28,12 +36,20 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
         
         #region ITriggerBuilder
         
-        public ITrigger BuildActualTenderReindexTrigger()
+        public ITrigger BuildNotActualTenderArchiveTrigger()
         {
             var builder = TriggerBuilder.Create()
-                .WithIdentity("ActualTenderReindexTrigger")
-                .WithCronSchedule(_scheduleOptions.CronExpression);
+                .WithIdentity("NotActualTenderArchiveTrigger")
+                .WithCronSchedule(_scheduleOptions.TenderArchiveCronExpression);
                 return builder.Build();
+        }
+        
+        public ITrigger BuildNotActualTenderDocumentDeleteTrigger()
+        {
+            var builder = TriggerBuilder.Create()
+                .WithIdentity("NotActualTenderDocumentDeleteTrigger")
+                .WithCronSchedule(_scheduleOptions.TenderDocumentDeleteCronExpression);
+            return builder.Build();
         }
         
         #endregion

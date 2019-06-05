@@ -7,12 +7,12 @@ using Quartz;
 namespace ActualTenderKeeper.Infrastructure.Schedule.Jobs
 {
     [DisallowConcurrentExecution]
-    public sealed class TenderArchiveJob : IJob
+    public sealed class NotActualTenderArchiveJob : IJob
     {
         private readonly ITenderArchiveStrategy _strategy;
         private readonly ILog _log;
         
-        public TenderArchiveJob(ITenderArchiveStrategy strategy, ILog log)
+        public NotActualTenderArchiveJob(ITenderArchiveStrategy strategy, ILog log)
         {
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _log = log ?? throw new ArgumentNullException(nameof(log));

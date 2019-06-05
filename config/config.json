@@ -2,9 +2,11 @@
   "Elasticsearch": {
     "BootstrapHosts": ["localhost:9222"],
     "ActualTenderIndex": "traderegistry_tender",
-    "ArchiveTenderIndex": "traderegistry_tender_archive"
+    "ArchiveTenderIndex": "traderegistry_tender_archive",
+    "BatchSize": 3
   },
-  "TenderReindexSchedule": {
-    "CronExpression": "0 0 0/1 1/1 * ? *"
+  "JobSchedule": {
+    "TenderArchiveCronExpression": "0 0/1 * 1/1 * ? *",
+    "TenderDocumentDeleteCronExpression": "0 0/1 * 1/1 * ? *"
   }
 }

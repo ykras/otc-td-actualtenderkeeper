@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
 using Infrastructure.Abstract.Logging;
 
-using static ActualTenderKeeper.Core.TenderElasticQuery;
+using static ActualTenderKeeper.Core.ElasticQuery;
 
 namespace ActualTenderKeeper.Core
 {
     public sealed class TenderArchiveStrategy : ITenderArchiveStrategy
     {
-        private readonly INotActualTendersArchiver _archiver;
+        private readonly IElasticAgent _elasticAgent;
         private readonly IElasticsearchOptions _options;
         private readonly ILog _log;
 
-        public TenderArchiveStrategy(INotActualTendersArchiver archiver,
+        public TenderArchiveStrategy(IElasticAgent elasticAgent,
             IElasticsearchOptions options,
             ILog log)
         {
-            _archiver = archiver ?? throw new ArgumentNullException(nameof(archiver));
+            _elasticAgent = elasticAgent ?? throw new ArgumentNullException(nameof(elasticAgent));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _log = log ?? throw new ArgumentNullException(nameof(log));
         }
@@ -28,11 +28,23 @@ namespace ActualTenderKeeper.Core
 
         public async Task ArchiveNotActualTenders(CancellationToken ct = default(CancellationToken))
         {
+            LogStartReindexTenders();
+            var r = await _elasticAgent.ReindexNotActualTenders(NotActualTendersQueryJson, ct);
+            LogCompleteReindexTendres(r);
+            
+            LogStartDeleteTenders();
+            r = await _elasticAgent.DeleteNotActualTenders(NotActualTendersQueryJson, ct);
+            LogCompleteDeleteTenders(r);
+        }
+
+        private void LogStartReindexTenders()
+        {
             _log.Info("Start reindexing of not actual tenders " +
                       $"from index {_options.ActualTenderIndexName} to index {_options.ArchiveTenderIndexName}");
-            
-            var r = await _archiver.ReindexNotActualTenders(NotActualTendersQueryJson, ct);
-            
+        }
+
+        private void LogCompleteReindexTendres(ElasticResult r)
+        {
             _log.Info("Reindexing of not actual tenders completed");
             _log.Info($"It's took {r.SpentTime.TotalMilliseconds} milliseconds");
             _log.Info($"Reindexed {r.NumberOfProcessedItems} not actual tenders");
@@ -41,12 +53,16 @@ namespace ActualTenderKeeper.Core
                 _log.Info("Some failures occured:");
                 _log.Info($"{string.Join(Environment.NewLine, r.Failures)}");     
             }
-            
+        }
+
+        private void LogStartDeleteTenders()
+        {
             _log.Info("Start deletion of not actual tenders " +
                       $"from index {_options.ActualTenderIndexName}");
+        }
 
-            r = await _archiver.DeleteNotActualTenders(NotActualTendersQueryJson, ct);
-            
+        private void LogCompleteDeleteTenders(ElasticResult r)
+        {
             _log.Info("Deletion of not actual tenders completed");
             _log.Info($"It's took {r.SpentTime.TotalMilliseconds} milliseconds");
             _log.Info($"Deleted {r.NumberOfProcessedItems} not actual tenders");

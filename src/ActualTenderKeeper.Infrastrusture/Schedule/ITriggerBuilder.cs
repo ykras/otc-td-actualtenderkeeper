@@ -4,6 +4,8 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
 {
     public interface ITriggerBuilder
     {
-        ITrigger BuildActualTenderReindexTrigger();
+        ITrigger BuildNotActualTenderArchiveTrigger();
+
+        ITrigger BuildNotActualTenderDocumentDeleteTrigger();
     }
 }

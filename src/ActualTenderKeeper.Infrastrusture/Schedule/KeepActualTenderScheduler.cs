@@ -35,9 +35,13 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
             try
             {
                 _log.Info($"Start service {ServiceName}");
-                await ScheduleJob(_jobBuilder.BuildActualTenderReindexJob(),
-                    _triggerBuilder.BuildActualTenderReindexTrigger()).ConfigureAwait(false);
-                await StartScheduler().ConfigureAwait(false);
+                await Task.WhenAll(
+//                    ScheduleJob(_jobBuilder.BuildNotActualTenderArchiveJob(),
+//                        _triggerBuilder.BuildNotActualTenderArchiveTrigger()),
+                    ScheduleJob(_jobBuilder.BuildNotActualTenderDocumentDeleteJob(),
+                        _triggerBuilder.BuildNotActualTenderDocumentDeleteTrigger())
+                );
+                await StartScheduler();
                 _log.Info($"Service {ServiceName} started");
             }
             catch (Exception e)

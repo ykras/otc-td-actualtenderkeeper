@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ActualTenderKeeper.Core
 {
-    public static class TenderElasticQuery
+    public static class ElasticQuery
     {
         public static string NotActualTendersQueryJson =>
             JsonConvert.SerializeObject(
