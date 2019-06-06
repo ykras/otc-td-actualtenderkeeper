@@ -6,7 +6,7 @@ namespace ActualTenderKeeper.Core
     {
         public long Id { get; set; }
         
-        public long TenderId { get; set; }
+        public IEnumerable<long> TenderIds { get; set; }
     }
 
     public sealed class TenderDocumentsBatch

@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ActualTenderKeeper.Abstract;
 using ActualTenderKeeper.Infrastructure.Tools;
-using Infrastructure.Abstract.Logging;
 using Microsoft.Extensions.Hosting;
 using Quartz;
 
@@ -36,8 +36,8 @@ namespace ActualTenderKeeper.Infrastructure.Schedule
             {
                 _log.Info($"Start service {ServiceName}");
                 await Task.WhenAll(
-//                    ScheduleJob(_jobBuilder.BuildNotActualTenderArchiveJob(),
-//                        _triggerBuilder.BuildNotActualTenderArchiveTrigger()),
+                    ScheduleJob(_jobBuilder.BuildNotActualTenderArchiveJob(),
+                        _triggerBuilder.BuildNotActualTenderArchiveTrigger()),
                     ScheduleJob(_jobBuilder.BuildNotActualTenderDocumentDeleteJob(),
                         _triggerBuilder.BuildNotActualTenderDocumentDeleteTrigger())
                 );

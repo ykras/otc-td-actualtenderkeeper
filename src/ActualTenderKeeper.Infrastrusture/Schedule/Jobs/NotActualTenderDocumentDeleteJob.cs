@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
-using Infrastructure.Abstract.Logging;
 using Quartz;
 
 namespace ActualTenderKeeper.Infrastructure.Schedule.Jobs

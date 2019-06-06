@@ -3,7 +3,8 @@
     "BootstrapHosts": ["localhost:9222"],
     "ActualTenderIndex": "traderegistry_tender",
     "ArchiveTenderIndex": "traderegistry_tender_archive",
-    "BatchSize": 3
+    "TenderDocumentIndex": "traderegistry_tender_document",
+    "BatchSize": 100
   },
   "JobSchedule": {
     "TenderArchiveCronExpression": "0 0/1 * 1/1 * ? *",

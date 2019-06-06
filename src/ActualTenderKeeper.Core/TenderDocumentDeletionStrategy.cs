@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
-using Infrastructure.Abstract.Logging;
 
 namespace ActualTenderKeeper.Core
 {
@@ -25,16 +24,31 @@ namespace ActualTenderKeeper.Core
         #region ITenderDocumentDeletionStrategy
         public async Task DeleteNotActualTenderDocuments(CancellationToken ct = default(CancellationToken))
         {
+            LogStartDeleteTenderDocuments();
+            
             var offset = 0;
             while (true)
             {
-                var batch = await _elasticAgent.ReadBatchOfTenderDocuments(offset, ct);
-                if (batch.NumberOfProcessedItems < 1) break;
-                var docs = batch.Result.TenderDocuments;
+                var batchRes = await _elasticAgent.ReadBatchOfTenderDocuments(offset, ct);
+                if (batchRes.NumberOfProcessedItems < 1) break;
+                var docs = batchRes.Result.TenderDocuments;
                 var notActualDocs = await _elasticAgent.SelectNotActualTenderDocuments(docs, ct);
-                var res = await _elasticAgent.DeleteTenderDocuments(notActualDocs, ct);
+                var deleteRes = await _elasticAgent.DeleteTenderDocuments(notActualDocs, ct);
                 offset += _options.BatchSize;
             }
+
+            LogCompleteDeleteTenderDocuments();
+        }
+
+        private void LogStartDeleteTenderDocuments()
+        {
+            _log.Info("Start delete of not actual tenders documents " +
+                      $"from index {_options.TenderDocumentIndexName}");
+        }
+
+        private void LogCompleteDeleteTenderDocuments()
+        {
+            _log.Info("Deletion of not actual tenders documents completed");
         }
         
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
-using Infrastructure.Abstract.Logging;
+using ActualTenderKeeper.Abstract;
+
 
 namespace ActualTenderKeeper.Infrastructure.Logging
 {

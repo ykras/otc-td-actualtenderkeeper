@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ActualTenderKeeper.Abstract;
-using Infrastructure.Abstract.Logging;
 
 using static ActualTenderKeeper.Core.ElasticQuery;
 

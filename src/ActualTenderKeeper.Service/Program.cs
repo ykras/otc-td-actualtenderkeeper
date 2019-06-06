@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ActualTenderKeeper.Abstract;
 using ActualTenderKeeper.Infrastructure.Schedule;
-using Infrastructure.Abstract.Logging;
 using Microsoft.Extensions.Hosting;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;

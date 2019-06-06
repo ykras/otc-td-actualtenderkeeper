@@ -25,6 +25,12 @@ namespace ActualTenderKeeper.Infrastructure.Elasticsearch
                 _options.BootstrapHosts.Select(x => new Uri($"http://{x}")));
             _connectionSettings = new ConnectionSettings(_connectionPool);
             _client = new ElasticClient(_connectionSettings);
+            
+            ConfigureElasticClientMappings();
+        }
+
+        private void ConfigureElasticClientMappings()
+        {
         }
         
         #region IElasticAgent
@@ -92,7 +98,8 @@ namespace ActualTenderKeeper.Infrastructure.Elasticsearch
             {
                 var res = await _client.SearchAsync<TenderDocument>(s => s
                     .Index(_options.TenderDocumentIndexName)
-                    .Source(sf => sf.Includes(f => f.Fields(d => d.Id, d => d.TenderId)))
+                    .Type("tenderDocument")
+                    .Source(sf => sf.Includes(f => f.Fields(d => d.Id, d => d.TenderIds)))
                     .Query(q => q.MatchAll())
                     .Sort(st => st.Ascending(d => d.Id))
                     .From(offset)
@@ -124,13 +131,12 @@ namespace ActualTenderKeeper.Infrastructure.Elasticsearch
 
             async Task<IEnumerable<TenderDocument>> run()
             {
-                //var tenderIds = docs.SelectMany(d => d.TenderId ?? Enumerable.Empty<long>()).ToArray();
-                var tenderIds = docs.Select(d => d.TenderId);
+                var tenderIds = docs.SelectMany(d => d.TenderIds ?? Enumerable.Empty<long>()).ToArray();
                 var actualTenderIds = await selectActualTenderIds(tenderIds);
                 var actualTenderIdsSet = new HashSet<long>(actualTenderIds);
-                //var notActualTenderDocuments = docs.Where(d => !actualTenderIdsSet.Overlaps(d.TenderId)).Select(d => d);
-                var notActualTenderDocuments = docs.Where(d => !actualTenderIdsSet.Contains(d.TenderId))
-                    .Select(d => d);
+                var notActualTenderDocuments = docs
+                    .Where(d => !actualTenderIdsSet
+                        .Overlaps(d.TenderIds)).Select(d => d);
                 return notActualTenderDocuments;
             }
             
@@ -159,7 +165,8 @@ namespace ActualTenderKeeper.Infrastructure.Elasticsearch
             {
                 var docIds = docs.Select(d => d.Id);
                 var res = await _client.DeleteByQueryAsync<Tender>(d => d
-                    .Index(_options.ActualTenderIndexName)
+                    .Index(_options.TenderDocumentIndexName)
+                    .Type("tenderDocument")
                     .Query(q => q.Ids(x => x.Values(docIds))),
                     ct);
                 EnsureValidResponse(res);
